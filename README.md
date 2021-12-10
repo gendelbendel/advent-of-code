@@ -19,3 +19,11 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/advent_of_code_2021](https://hexdocs.pm/advent_of_code_2021).
 
+## Secrets
+
+```elixir
+use Mix.Config
+
+config :advent_of_code_2021, AdventOfCode2021.Input,
+  session_cookie: "..." # yours will be longer
+```

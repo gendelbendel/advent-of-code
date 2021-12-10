@@ -46,25 +46,20 @@ defmodule AdventOfCode2021.Input do
     :ok = File.write(path, input)
   end
 
-  defp from_cache!(day, year), do: File.read!(cache_path(day, year))
+  defp from_cache!(day, year), do: File.read!(cache_path(day, year)) |> String.split()
 
   defp download!(day, year) do
-    {:ok, {{'HTTP/1.1', 200, 'OK'}, _, input}} =
-      :httpc.request(
-        :get,
-        {'https://adventofcode.com/#{year}/day/#{day}/input', headers()},
-        [],
-        []
-      )
+    HTTPoison.start()
+    {:ok, input} = HTTPoison.get("https://adventofcode.com/#{year}/day/#{day}/input", headers())
 
-    store_in_cache!(day, year, input)
+    test = String.split(input.body)
+    store_in_cache!(day, year, test)
 
-    to_string(input)
+    test
   end
 
   defp cache_dir do
-    config()
-    |> Path.join([project_root(), cache_dir_config()])
+    Path.join([project_root(), cache_dir_config()])
     |> Path.expand()
   end
 
@@ -81,5 +76,5 @@ defmodule AdventOfCode2021.Input do
   defp cache_dir_config, do: Keyword.get(config(), :cache_dir, ".cache/advent_of_code_inputs")
 
   defp headers,
-    do: [{'cookie', String.to_charlist("session=" <> Keyword.get(config(), :session_cookie))}]
+    do: [cookie: String.to_charlist("session=" <> Keyword.get(config(), :session_cookie))]
 end
