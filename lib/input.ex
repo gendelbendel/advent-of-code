@@ -46,16 +46,16 @@ defmodule AdventOfCode2021.Input do
     :ok = File.write(path, input)
   end
 
-  defp from_cache!(day, year), do: File.read!(cache_path(day, year)) |> String.split()
+  defp from_cache!(day, year),
+    do: File.read!(cache_path(day, year)) |> String.split("\n", trim: true)
 
   defp download!(day, year) do
     HTTPoison.start()
     {:ok, input} = HTTPoison.get("https://adventofcode.com/#{year}/day/#{day}/input", headers())
 
-    test = String.split(input.body)
-    store_in_cache!(day, year, test)
+    store_in_cache!(day, year, input.body)
 
-    test
+    input.body
   end
 
   defp cache_dir do

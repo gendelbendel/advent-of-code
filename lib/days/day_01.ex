@@ -10,9 +10,6 @@ defmodule AdventOfCode2021.Day01 do
   end
 
   defp gather_all(value, acc) do
-    value |> IO.inspect(label: "Current value")
-    acc.prev |> IO.inspect(label: "Previous value")
-
     cond do
       value > acc.prev ->
         %{count: acc.count + 1, prev: value}
@@ -34,8 +31,6 @@ defmodule AdventOfCode2021.Day01 do
   end
 
   defp gather_all_sliding(value, %{"aCount" => 1} = acc) do
-    IO.puts('here')
-
     %{
       "count" => 0,
       "a" => Access.get(acc, "a") + value,
