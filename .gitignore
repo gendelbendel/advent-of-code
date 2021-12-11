@@ -28,3 +28,5 @@ advent_of_code_2021-*.tar
 config/secrets.exs
 
 .elixir_ls
+
+.cache
