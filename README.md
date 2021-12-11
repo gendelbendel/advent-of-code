@@ -29,6 +29,12 @@ mix dayXX.pYY
 
 Replace `XX` with your day, `YY` with part (either `01` or `02`)
 
+e.g. to run day 01, part 01
+
+```bash
+mix day01.p01
+```
+
 ## TODOs
 
 - Add unit tests :)
