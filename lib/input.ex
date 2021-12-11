@@ -55,7 +55,7 @@ defmodule AdventOfCode2021.Input do
 
     store_in_cache!(day, year, input.body)
 
-    input.body
+    String.split(input.body, "\n", trim: true)
   end
 
   defp cache_dir do
