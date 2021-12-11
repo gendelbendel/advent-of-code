@@ -6,18 +6,18 @@ defmodule AdventOfCode2021.Day10 do
   end
 
   defp discover_errors(value, acc) do
-    maybe_errors =
-      value
-      |> String.graphemes()
-      |> Enum.reduce(%{stack: []}, &test_for_error/2)
+    value
+    |> String.graphemes()
+    |> Enum.reduce(%{stack: []}, &test_for_error/2)
+    |> maybe_add_error_value(acc)
+  end
 
-    cond do
-      is_number(maybe_errors) ->
-        [maybe_errors | acc]
+  defp maybe_add_error_value(errors, acc) when is_number(errors) do
+    [errors | acc]
+  end
 
-      true ->
-        [0 | acc]
-    end
+  defp maybe_add_error_value(_errors, acc) do
+    [0 | acc]
   end
 
   defp test_for_error(_value, acc) when is_number(acc) do
@@ -76,18 +76,18 @@ defmodule AdventOfCode2021.Day10 do
   end
 
   defp discover_goods(value, acc) do
-    maybe_goods =
-      value
-      |> String.graphemes()
-      |> Enum.reduce(%{stack: []}, &test_for_goods/2)
+    value
+    |> String.graphemes()
+    |> Enum.reduce(%{stack: []}, &test_for_goods/2)
+    |> maybe_calculate_goods(acc)
+  end
 
-    cond do
-      is_map(maybe_goods) ->
-        [Enum.reduce(maybe_goods.stack, 0, &calculate_goods_value/2) | acc]
+  defp maybe_calculate_goods(goods, acc) when is_map(goods) do
+    [Enum.reduce(goods.stack, 0, &calculate_goods_value/2) | acc]
+  end
 
-      true ->
-        acc
-    end
+  defp maybe_calculate_goods(_goods, acc) do
+    acc
   end
 
   defp find_middle_score(scores) do

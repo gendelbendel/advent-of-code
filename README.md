@@ -1,25 +1,16 @@
 # AdventOfCode2021
 
-**TODO: Add description**
+[Elixir](https://elixir-lang.org/) implementation of the [Advent of Code 2021](https://adventofcode.com/2021) challenges
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `advent_of_code_2021` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:advent_of_code_2021, "~> 0.1.0"}
-  ]
-end
+```bash
+mix deps.get
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/advent_of_code_2021](https://hexdocs.pm/advent_of_code_2021).
+## Secrets config
 
-## Secrets
+Make a new file `config/secrets.exs` and define it like so:
 
 ```elixir
 use Mix.Config
@@ -27,3 +18,18 @@ use Mix.Config
 config :advent_of_code_2021, AdventOfCode2021.Input,
   session_cookie: "..." # yours will be longer
 ```
+
+Replace the `session_cookie` value with your cookie from the adventofcode website
+
+## Running
+
+```bash
+mix dayXX.pYY
+```
+
+Replace `XX` with your day, `YY` with part (either `01` or `02`)
+
+## TODOs
+
+- Add unit tests :)
+- Days 04-09
