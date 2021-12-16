@@ -1,8 +1,6 @@
 defmodule Mix.Tasks.DayRunner do
   use Mix.Task
 
-  # import AdventOfCode2021.Day01
-
   @shortdoc "Run supplied day and part"
   def run(args) do
     parse_options(args)
@@ -18,29 +16,37 @@ defmodule Mix.Tasks.DayRunner do
       )
 
     valid
-    |> List.to_tuple()
+    |> Map.new()
     |> validate_options()
   end
 
-  defp validate_options(options) do
-    case options do
-      {{:day, _day}, {:part, _part}} -> options
-      {{:day, _day}} -> {:error, "Missing part. Supply with `-p X` or `--part X`"}
-      {{:part, _part}} -> {:error, "Missing day. Supply with `-d X` or `--day X`"}
-      _ -> {:error, "Something really wrong happened"}
-    end
+  defp validate_options(%{day: _day, part: _part} = options) do
+    options
+  end
+
+  defp validate_options(%{day: _day}) do
+    {:error, "Missing part. Supply with `-p X` or `--part X`"}
+  end
+
+  defp validate_options(%{part: _part}) do
+    {:error, "Missing day. Supply with `-d X` or `--day X`"}
+  end
+
+  defp validate_options(_opts) do
+    {:error, "Something really wrong happened"}
   end
 
   defp run_with_options({:error, error}) do
-    IO.inspect(error)
+    raise "ERROR: #{error}"
   end
 
-  defp run_with_options({{:day, day}, {:part, part}}) do
+  defp run_with_options(%{day: day, part: part}) do
     day_modules = get_all_day_modules()
 
     day_modules
     |> Enum.reduce(%{day: day, part: part}, &find_matching_day/2)
-    |> validate_day_and_part()
+    |> validate_day()
+    |> validate_part()
     |> run_day_and_part()
   end
 
@@ -64,21 +70,24 @@ defmodule Mix.Tasks.DayRunner do
   defp run_day_and_part(_) do
   end
 
-  defp validate_day_and_part(%{day: _day, part: part, mod: _mod} = full) do
-    case part do
-      1 ->
-        Map.replace(full, :part, :part1)
-
-      2 ->
-        Map.replace(full, :part, :part2)
-
-      _ ->
-        IO.puts("Invalid part; only 1 or 2 is allowed. Given: #{part}")
-    end
+  defp validate_part(%{part: 1} = full) do
+    Map.replace(full, :part, :part1)
   end
 
-  defp validate_day_and_part(%{day: day, part: part}) do
-    IO.puts("Could not find available module: -d #{day} -p #{part}")
+  defp validate_part(%{part: 2} = full) do
+    Map.replace(full, :part, :part2)
+  end
+
+  defp validate_part(%{part: part}) do
+    raise "Invalid part; only 1 or 2 is allowed. Given: #{part}"
+  end
+
+  defp validate_day(%{mod: _mod} = full) do
+    full
+  end
+
+  defp validate_day(%{day: day, part: _part}) do
+    raise "Could not find available module for day: #{day}"
   end
 
   defp get_all_day_modules() do
