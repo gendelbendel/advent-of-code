@@ -51,12 +51,21 @@ defmodule AdventOfCode2021.Input do
 
   defp download!(day, year) do
     HTTPoison.start()
-    {:ok, input} = HTTPoison.get("https://adventofcode.com/#{year}/day/#{day}/input", headers())
 
-    store_in_cache!(day, year, input.body)
+    url = download_url(day, year)
 
-    String.split(input.body, "\n", trim: true)
+    case HTTPoison.get(url, headers()) do
+      {:ok, input} ->
+        store_in_cache!(day, year, input.body)
+        String.split(input.body, "\n", trim: true)
+
+      {:error, error} ->
+        IO.puts("Error downloading input file: #{url}")
+        raise error
+    end
   end
+
+  defp download_url(day, year), do: "https://adventofcode.com/#{year}/day/#{day}/input"
 
   defp cache_dir do
     Path.join([project_root(), cache_dir_config()])
