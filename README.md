@@ -24,15 +24,15 @@ Replace the `session_cookie` value with your cookie from the adventofcode websit
 ## Running
 
 ```bash
-mix dayXX.pYY
+mix day_runner -d X -p Y
 ```
 
-Replace `XX` with your day, `YY` with part (either `01` or `02`)
+Replace `X` with your day, `Y` with part (either `1` or `2`)
 
 e.g. to run day 01, part 01
 
 ```bash
-mix day01.p01
+mix day_runner -d 1 -p 1
 ```
 
 ## TODOs
