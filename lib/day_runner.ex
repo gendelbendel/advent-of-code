@@ -3,8 +3,19 @@ defmodule Mix.Tasks.DayRunner do
 
   @shortdoc "Run supplied day and part"
   def run(args) do
-    parse_options(args)
-    |> run_with_options()
+    with {:ok, day_part} <- parse_options(args),
+         {:ok, %{day: day, part: part, mod: mod}} <- get_module(day_part) do
+      input = AdventOfCode2021.Input.get!(day, 2021)
+
+      apply(mod, part, input)
+      |> IO.inspect(label: "Day #{day} #{Atom.to_string(part)} results: ")
+    else
+      {:error, error} -> handle_error(error)
+    end
+  end
+
+  defp handle_error(error) do
+    raise error
   end
 
   defp parse_options(args) do
@@ -21,7 +32,7 @@ defmodule Mix.Tasks.DayRunner do
   end
 
   defp validate_options(%{day: _day, part: _part} = options) do
-    options
+    {:ok, options}
   end
 
   defp validate_options(%{day: _day}) do
@@ -36,18 +47,15 @@ defmodule Mix.Tasks.DayRunner do
     {:error, "Something really wrong happened"}
   end
 
-  defp run_with_options({:error, error}) do
-    raise "ERROR: #{error}"
-  end
-
-  defp run_with_options(%{day: day, part: part}) do
-    day_modules = get_all_day_modules()
-
-    day_modules
-    |> Enum.reduce(%{day: day, part: part}, &find_matching_day/2)
-    |> validate_day()
-    |> validate_part()
-    |> run_day_and_part()
+  defp get_module(%{day: day, part: part}) do
+    with modules <- get_all_day_modules(),
+         day_mod_pair <- Enum.reduce(modules, %{day: day, part: part}, &find_matching_day/2),
+         {:ok, valid_day} <- validate_day(day_mod_pair),
+         {:ok, _valid_part} = valid_pair <- validate_part(valid_day) do
+      valid_pair
+    else
+      {:error, error} -> {:error, error}
+    end
   end
 
   defp find_matching_day(mod, acc) do
@@ -60,34 +68,24 @@ defmodule Mix.Tasks.DayRunner do
     end
   end
 
-  defp run_day_and_part(%{day: day, part: part, mod: mod} = full) when is_map(full) do
-    input = AdventOfCode2021.Input.get!(day, 2021)
-
-    apply(mod, part, input)
-    |> IO.inspect(label: "Day #{day} #{Atom.to_string(part)} results: ")
-  end
-
-  defp run_day_and_part(_) do
-  end
-
   defp validate_part(%{part: 1} = full) do
-    Map.replace(full, :part, :part1)
+    {:ok, Map.replace(full, :part, :part1)}
   end
 
   defp validate_part(%{part: 2} = full) do
-    Map.replace(full, :part, :part2)
+    {:ok, Map.replace(full, :part, :part2)}
   end
 
   defp validate_part(%{part: part}) do
-    raise "Invalid part; only 1 or 2 is allowed. Given: #{part}"
+    {:error, "Invalid part; only 1 or 2 is allowed. Given: #{part}"}
   end
 
   defp validate_day(%{mod: _mod} = full) do
-    full
+    {:ok, full}
   end
 
   defp validate_day(%{day: day, part: _part}) do
-    raise "Could not find available module for day: #{day}"
+    {:error, "Could not find available module for day: #{day}"}
   end
 
   defp get_all_day_modules() do
