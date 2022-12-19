@@ -3,12 +3,12 @@ defmodule Mix.Tasks.DayRunner do
 
   @shortdoc "Run supplied day and part"
   def run(args) do
-    with {:ok, day_part} <- parse_options(args),
-         {:ok, %{day: day, part: part, mod: mod}} <- get_module(day_part) do
-      input = AdventOfCode2021.Input.get!(day, 2021)
+    with {:ok, day_part_year} <- parse_options(args),
+         {:ok, %{day: day, part: part, mod: mod, year: year}} <- get_module(day_part_year) do
+      input = AdventOfCode.Input.get!(day, year)
 
-      apply(mod, part, input)
-      |> IO.inspect(label: "Day #{day} #{Atom.to_string(part)} results: ")
+      apply(mod, part, [input])
+      |> IO.inspect(label: "Year #{year} Day #{day} #{Atom.to_string(part)} results: ")
     else
       {:error, error} -> handle_error(error)
     end
@@ -22,8 +22,8 @@ defmodule Mix.Tasks.DayRunner do
     {valid, _args, _invalid} =
       args
       |> OptionParser.parse(
-        strict: [day: :integer, part: :integer],
-        aliases: [d: :day, p: :part]
+        strict: [day: :integer, part: :integer, year: :integer],
+        aliases: [d: :day, p: :part, y: :year]
       )
 
     valid
@@ -31,7 +31,7 @@ defmodule Mix.Tasks.DayRunner do
     |> validate_options()
   end
 
-  defp validate_options(%{day: _day, part: _part} = options) do
+  defp validate_options(%{day: _day, part: _part, year: _year} = options) do
     {:ok, options}
   end
 
@@ -47,9 +47,10 @@ defmodule Mix.Tasks.DayRunner do
     {:error, "Something really wrong happened"}
   end
 
-  defp get_module(%{day: day, part: part}) do
-    with modules <- get_all_day_modules(),
-         day_mod_pair <- Enum.reduce(modules, %{day: day, part: part}, &find_matching_day/2),
+  defp get_module(%{day: day, part: part, year: year}) do
+    with modules <- get_all_day_modules(year),
+         day_mod_pair <-
+           Enum.reduce(modules, %{day: day, part: part, year: year}, &find_matching_day/2),
          {:ok, valid_day} <- validate_day(day_mod_pair),
          {:ok, _valid_part} = valid_pair <- validate_part(valid_day) do
       valid_pair
@@ -88,12 +89,18 @@ defmodule Mix.Tasks.DayRunner do
     {:error, "Could not find available module for day: #{day}"}
   end
 
-  defp get_all_day_modules() do
-    with {:ok, list} <- :application.get_key(:advent_of_code_2021, :modules) do
+  defp get_all_day_modules(year) do
+    with {:ok, list} <- :application.get_key(:advent_of_code, :modules) do
       list
+      |> Enum.filter(&filter_year_modules(&1, year))
       |> Enum.filter(&filter_day_modules_suffix/1)
       |> Enum.map(&get_module_map_value/1)
     end
+  end
+
+  defp filter_year_modules(mod, year) do
+    String.contains?(Atom.to_string(mod), ~w|Year|) &&
+      String.contains?(Atom.to_string(mod), Integer.to_string(year))
   end
 
   defp filter_day_modules_suffix(mod) do

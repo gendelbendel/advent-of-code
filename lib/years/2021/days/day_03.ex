@@ -1,8 +1,9 @@
-defmodule AdventOfCode2021.Day03 do
+defmodule AdventOfCode.Year2021.Day03 do
   def part1(args) do
     frequencies =
       args
       |> Enum.map(&gather_frequencies/1)
+      |> Enum.filter(fn x -> x != [] end)
       |> Enum.zip_reduce([], &gather_frequency/2)
 
     gamma = calculate_gamma(frequencies)

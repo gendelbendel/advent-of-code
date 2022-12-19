@@ -1,4 +1,4 @@
-defmodule AdventOfCode2021.Day10 do
+defmodule AdventOfCode.Year2021.Day10 do
   def part1(args) do
     args
     |> Enum.reduce([], &discover_errors/2)

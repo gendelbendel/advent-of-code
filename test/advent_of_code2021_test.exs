@@ -1,8 +1,8 @@
-defmodule AdventOfCode2021Test do
+defmodule AdventOfCode do
   use ExUnit.Case
-  doctest AdventOfCode2021
+  doctest AdventOfCode
 
   test "greets the world" do
-    assert AdventOfCode2021.hello() == :world
+    assert AdventOfCode.hello() == :world
   end
 end

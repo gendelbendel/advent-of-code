@@ -1,4 +1,4 @@
-defmodule AdventOfCode2021.Input do
+defmodule AdventOfCode.Input do
   @moduledoc """
   This module can help with automatically managing your Advent of Code input
   files. It will retrieve them once from the server and cache them to your
@@ -47,7 +47,7 @@ defmodule AdventOfCode2021.Input do
   end
 
   defp from_cache!(day, year),
-    do: File.read!(cache_path(day, year)) |> String.split("\n", trim: true)
+    do: File.read!(cache_path(day, year)) |> String.split("\n", trim: false)
 
   defp download!(day, year) do
     HTTPoison.start()
@@ -57,7 +57,7 @@ defmodule AdventOfCode2021.Input do
     case HTTPoison.get(url, headers()) do
       {:ok, input} ->
         store_in_cache!(day, year, input.body)
-        String.split(input.body, "\n", trim: true)
+        String.split(input.body, "\n", trim: false)
 
       {:error, error} ->
         IO.puts("Error downloading input file: #{url}")
@@ -79,7 +79,7 @@ defmodule AdventOfCode2021.Input do
     end
   end
 
-  defp config, do: Application.get_env(:advent_of_code_2021, __MODULE__)
+  defp config, do: Application.get_env(:advent_of_code, __MODULE__)
   defp allow_network?, do: Keyword.get(config(), :allow_network?, false)
   defp project_root, do: Keyword.get(config(), :project_root)
   defp cache_dir_config, do: Keyword.get(config(), :cache_dir, ".cache/advent_of_code_inputs")

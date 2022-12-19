@@ -1,4 +1,4 @@
-defmodule AdventOfCode2021.Day01 do
+defmodule AdventOfCode.Year2021.Day01 do
   def part1(args) do
     args
     |> Enum.reduce(%{count: 0, prev: -1}, &gather_all/2)
@@ -23,6 +23,10 @@ defmodule AdventOfCode2021.Day01 do
     args
     |> Enum.reduce(%{"count" => 0}, &gather_all_sliding/2)
     |> Access.get("count")
+  end
+
+  defp gather_all_sliding(value, acc) when is_binary(value) and value == "" do
+    acc
   end
 
   defp gather_all_sliding(value, acc) when is_binary(value) do

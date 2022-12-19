@@ -1,4 +1,4 @@
-defmodule AdventOfCode2021.Day02 do
+defmodule AdventOfCode.Year2021.Day02 do
   # `forward X` increases the horizontal position by X units.
   # `down X` increases the depth by X units.
   # `up X` decreases the depth by X units.
@@ -8,6 +8,10 @@ defmodule AdventOfCode2021.Day02 do
     args
     |> Enum.reduce(%{horizontal: 0, depth: 0}, &gather_values/2)
     |> multiply_location()
+  end
+
+  defp gather_values(value, acc) when value == "" do
+    acc
   end
 
   defp gather_values(value, acc) do
@@ -45,6 +49,10 @@ defmodule AdventOfCode2021.Day02 do
     args
     |> Enum.reduce(%{horizontal: 0, depth: 0, aim: 0}, &gather_values_p2/2)
     |> multiply_location()
+  end
+
+  defp gather_values_p2(value, acc) when value == "" do
+    acc
   end
 
   defp gather_values_p2(value, acc) do
