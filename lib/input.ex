@@ -17,6 +17,9 @@ defmodule AdventOfCode.Input do
 
   def get!(day, year) do
     cond do
+      allow_dev_dir?() && in_dev_dir?(day, year) ->
+        from_dev_dir!(day, year)
+
       in_cache?(day, year) ->
         from_cache!(day, year)
 
@@ -27,6 +30,17 @@ defmodule AdventOfCode.Input do
         raise "Cache miss for day #{day} of year #{year} and `:allow_network?` is not `true`"
     end
   end
+
+  defp dev_dir_path(day, year), do: Path.join(dev_dir(), "/#{year}/#{day}.aocinput")
+  defp in_dev_dir?(day, year), do: File.exists?(dev_dir_path(day, year))
+
+  defp dev_dir do
+    Path.join([project_root(), dev_dir_config()])
+    |> Path.expand()
+  end
+
+  defp from_dev_dir!(day, year),
+    do: File.read!(dev_dir_path(day, year)) |> String.split("\n", trim: false)
 
   @doc """
   If, somehow, your input is invalid or mangled and you want to delete it from
@@ -81,8 +95,10 @@ defmodule AdventOfCode.Input do
 
   defp config, do: Application.get_env(:advent_of_code, __MODULE__)
   defp allow_network?, do: Keyword.get(config(), :allow_network?, false)
+  defp allow_dev_dir?, do: Keyword.get(config(), :allow_dev_dir?, false)
   defp project_root, do: Keyword.get(config(), :project_root)
   defp cache_dir_config, do: Keyword.get(config(), :cache_dir, ".cache/advent_of_code_inputs")
+  defp dev_dir_config, do: Keyword.get(config(), :dev_dir, "dev_input/advent_of_code_inputs")
 
   defp headers,
     do: [cookie: String.to_charlist("session=" <> Keyword.get(config(), :session_cookie))]

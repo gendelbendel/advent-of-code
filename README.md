@@ -21,6 +21,23 @@ config :advent_of_code, AdventOfCode.Input,
 
 Replace the `session_cookie` value with your cookie from the adventofcode website
 
+## dev_input vs cache vs download
+
+There are three different ways of gathering input:
+
+1. Downloading input directly from the advent of code website
+2. Using a cache from your saved download
+3. Using [dev_input](dev_input) directory (aka my input)
+
+### Load preference order
+
+The input loading order depends on configuration and existence of files.
+
+1. If `allow_dev_dir?` in [config/config.exs](config/config.exs) is set to `true` and the input file exists for your specified year/day/part inside `dev_input` directory, the program will prioritize this first.
+2. If the input file exists for your specified year/day/part inside `.cache` directory, the program will prioritize this second.
+3. If `allow_network?` in [config/config.exs](config/config.exs) is set to `true`, it will download the input directly from the Advent of Code website
+   - Note: You must have your secret setup correctly. Refer to [Secrets Config](#secrets-config).
+
 ## Running
 
 ```bash
